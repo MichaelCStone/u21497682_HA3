@@ -1,0 +1,123 @@
+﻿@model u21497682_HA3.Models.Combined
+@using Newtonsoft.Json
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.68/vfs_fonts.js"></script>
+</head>
+
+<main>
+    <div class="row">
+        <h3>Report</h3>
+        <canvas id="myChart" width="400" height="200"></canvas>
+    </div>
+
+    <div class="row">
+        <h3>Save Report</h3>
+        <input type="text" id="filename" placeholder="Enter filename" />
+        <select id="fileType">
+            <option value="pdf">PDF</option>
+            <option value="csv">CSV</option>
+        </select>
+        <button onclick="saveReport()">Save Report</button>
+    </div>
+
+    <div class="row">
+        <h3>Archive</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Filename</th>
+                    <th>Download</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var file in ViewBag.ReportFiles)
+                {
+                    <tr>
+                        <td>@file</td>
+                        <td>
+                            <a href="@Url.Action("DownloadReport", "Home", new { filename = file })" target="_blank">Download</a>
+                        </td>
+                        <td>
+                            <form action="@Url.Action("DeleteReport", "Home")" method="post" onsubmit="return confirm('Are you sure you want to delete this report?');">
+                                <input type="hidden" name="filename" value="@file" />
+                                <button type="submit">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</main>
+
+<script>
+    async function saveReport() {
+    const filename = document.getElementById("filename").value || "report";
+    const fileType = document.getElementById("fileType").value;
+
+    if (fileType === "pdf") {
+        const chartDataUrl = document.getElementById("myChart").toDataURL("image/png");
+        const pdfDoc = {
+            content: [
+                { text: 'Borrow Report', style: 'header' },
+                { image: chartDataUrl, width: 500 }
+            ]
+        };
+
+        pdfMake.createPdf(pdfDoc).getBlob(async (blob) => {
+            const formData = new FormData();
+            formData.append("file", blob, filename + ".pdf");
+
+            await fetch("@Url.Action("SaveReport", "Home")", {
+                method: "POST",
+                body: formData
+            });
+            location.reload(); // Reload the page to display the newly saved file in the archive
+        });
+    } else if (fileType === "csv") {
+        const borrowData = @Html.Raw(JsonConvert.SerializeObject(ViewBag.BorrowCounts));
+        let csvContent = "BookId,BookName,BorrowCount\n"
+            + borrowData.map(e => `${e.BookId},${e.BookName},${e.BorrowCount}`).join("\n");
+
+        const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+        const formData = new FormData();
+        formData.append("file", blob, filename + ".csv");
+
+        await fetch("@Url.Action("SaveReport", "Home")", {
+            method: "POST",
+            body: formData
+        });
+        location.reload(); // Reload the page to display the newly saved file in the archive
+    }
+}
+
+    const bookNames = @Html.Raw(JsonConvert.SerializeObject(Model.Books.Select(b => b.name).ToList()));
+    const borrowCounts = @Html.Raw(JsonConvert.SerializeObject(Model.Books.Select(b => b.borrows.Count()).ToList()));
+
+    const ctx = document.getElementById('myChart').getContext('2d');
+
+    const myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: bookNames,
+            datasets: [{
+                label: 'Borrow Count',
+                data: borrowCounts,
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>

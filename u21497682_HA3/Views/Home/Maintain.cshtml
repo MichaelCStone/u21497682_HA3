@@ -1,0 +1,327 @@
+﻿@model u21497682_HA3.Models.Combined
+
+<main>
+    <div class="row mainSection">
+        <div class="row componentHeadings">
+            <div class="col">
+                <h3>Authors</h3>
+            </div>
+            <div class="col" style="text-align:right;">
+                @Html.ActionLink("Create New Author", "Create", "authors", null, new { @class = "btn btn-success openModal" })
+            </div>
+        </div>
+
+        <div class="row componentList">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Author ID</th>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var author in Model.Authors)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => author.authorId)</td>
+                            <td>@Html.DisplayFor(modelItem => author.name)</td>
+                            <td>@Html.DisplayFor(modelItem => author.surname)</td>
+                            <td>
+                                @Html.ActionLink("Edit", "Edit", "authors", new { id = author.authorId }, new { @class = "btn btn-warning btn-sm openModal" })
+                                @Html.ActionLink("Delete", "Delete", "authors", new { id = author.authorId }, new { @class = "btn btn-danger btn-sm openModal" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="row componentPaging">
+            <div class="pagination">
+                @if (ViewBag.AuthorCurrentPage > 1)
+                {
+                    <a href="@Url.Action("Maintain", new { authorPage = 1, authorPageSize = ViewBag.AuthorPageSize, typePage = ViewBag.TypeCurrentPage, typePageSize = ViewBag.TypePageSize, borrowPage = ViewBag.BorrowCurrentPage, borrowPageSize = ViewBag.BorrowPageSize })">First</a>
+                    <a href="@Url.Action("Maintain", new { authorPage = ViewBag.AuthorCurrentPage - 1, authorPageSize = ViewBag.AuthorPageSize, typePage = ViewBag.TypeCurrentPage, typePageSize = ViewBag.TypePageSize, borrowPage = ViewBag.BorrowCurrentPage, borrowPageSize = ViewBag.BorrowPageSize })">Previous</a>
+                }
+
+                @* Define the range of pages to display for authors *@
+                @{
+                    int AuthorMaxVisiblePages = 5; // Number of page links to show at once
+                    int AuthorStartPage = Math.Max(1, ViewBag.AuthorCurrentPage - AuthorMaxVisiblePages / 2);
+                    int AuthorEndPage = Math.Min(ViewBag.AuthorTotalPages, AuthorStartPage + AuthorMaxVisiblePages - 1);
+
+                    // Adjust if we're near the end
+                    if ((AuthorEndPage - AuthorStartPage) < (AuthorMaxVisiblePages - 1))
+                    {
+                        AuthorStartPage = Math.Max(1, AuthorEndPage - AuthorMaxVisiblePages + 1);
+                    }
+                }
+
+                @* Display the page links within the range for authors *@
+                @for (int i = AuthorStartPage; i <= AuthorEndPage; i++)
+                {
+                    <a href="@Url.Action("Maintain", new { authorPage = i, authorPageSize = ViewBag.AuthorPageSize, typePage = ViewBag.TypeCurrentPage, typePageSize = ViewBag.TypePageSize, borrowPage = ViewBag.BorrowCurrentPage, borrowPageSize = ViewBag.BorrowPageSize })"
+                       class="pagination-link @(i == ViewBag.AuthorCurrentPage ? "active" : "")">@i</a>
+                }
+
+                @if (ViewBag.AuthorCurrentPage < ViewBag.AuthorTotalPages)
+                {
+                    <a href="@Url.Action("Maintain", new { authorPage = ViewBag.AuthorCurrentPage + 1, authorPageSize = ViewBag.AuthorPageSize, typePage = ViewBag.TypeCurrentPage, typePageSize = ViewBag.TypePageSize, borrowPage = ViewBag.BorrowCurrentPage, borrowPageSize = ViewBag.BorrowPageSize })">Next</a>
+                    <a href="@Url.Action("Maintain", new { authorPage = ViewBag.AuthorTotalPages, authorPageSize = ViewBag.AuthorPageSize, typePage = ViewBag.TypeCurrentPage, typePageSize = ViewBag.TypePageSize, borrowPage = ViewBag.BorrowCurrentPage, borrowPageSize = ViewBag.BorrowPageSize })">Last</a>
+                }
+            </div>
+        </div>
+
+        <div class="row">
+            <p style="color: white" ;>.</p>
+            <hr />
+            <p style="color: white" ;>.</p>
+        </div>
+
+        <div class="row componentHeadings">
+            <div class="col">
+                <h3>Types</h3>
+            </div>
+            <div class="col" style="text-align:right;">
+                @Html.ActionLink("Create New Type", "Create", "types", null, new { @class = "btn btn-success openModal" })
+            </div>
+        </div>
+
+        <div class="row componentList">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type ID</th>
+                        <th>Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var type in Model.Types)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => type.typeId)</td>
+                            <td>@Html.DisplayFor(modelItem => type.name)</td>
+                            <td>
+                                @Html.ActionLink("Edit", "Edit", "types", new { id = type.typeId }, new { @class = "btn btn-warning btn-sm openModal" })
+                                @Html.ActionLink("Delete", "Delete", "types", new { id = type.typeId }, new { @class = "btn btn-danger btn-sm openModal" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="row componentPaging">
+            <div class="pagination">
+                @if (ViewBag.TypeCurrentPage > 1)
+                {
+                    <a href="@Url.Action("Maintain", new { authorPage = ViewBag.AuthorCurrentPage, authorPageSize = ViewBag.AuthorPageSize, typePage = 1, typePageSize = ViewBag.TypePageSize, borrowPage = ViewBag.BorrowCurrentPage, borrowPageSize = ViewBag.BorrowPageSize })">First</a>
+                    <a href="@Url.Action("Maintain", new { authorPage = ViewBag.AuthorCurrentPage, authorPageSize = ViewBag.AuthorPageSize, typePage = ViewBag.TypeCurrentPage - 1, typePageSize = ViewBag.TypePageSize, borrowPage = ViewBag.BorrowCurrentPage, borrowPageSize = ViewBag.BorrowPageSize })">Previous</a>
+                }
+
+                @* Define the range of pages to display for types *@
+                @{
+                    int TypeMaxVisiblePages = 5; // Number of page links to show at once
+                    int TypeStartPage = Math.Max(1, ViewBag.TypeCurrentPage - TypeMaxVisiblePages / 2);
+                    int TypeEndPage = Math.Min(ViewBag.TypeTotalPages, TypeStartPage + TypeMaxVisiblePages - 1);
+
+                    // Adjust if we're near the end
+                    if ((TypeEndPage - TypeStartPage) < (TypeMaxVisiblePages - 1))
+                    {
+                        TypeStartPage = Math.Max(1, TypeEndPage - TypeMaxVisiblePages + 1);
+                    }
+                }
+
+                @* Display the page links within the range for types *@
+                @for (int i = TypeStartPage; i <= TypeEndPage; i++)
+                {
+                    <a href="@Url.Action("Maintain", new { authorPage = ViewBag.AuthorCurrentPage, authorPageSize = ViewBag.AuthorPageSize, typePage = i, typePageSize = ViewBag.TypePageSize, borrowPage = ViewBag.BorrowCurrentPage, borrowPageSize = ViewBag.BorrowPageSize })"
+                       class="pagination-link @(i == ViewBag.TypeCurrentPage ? "active" : "")">@i</a>
+                }
+
+                @if (ViewBag.TypeCurrentPage < ViewBag.TypeTotalPages)
+                {
+                    <a href="@Url.Action("Maintain", new { authorPage = ViewBag.AuthorCurrentPage, authorPageSize = ViewBag.AuthorPageSize, typePage = ViewBag.TypeCurrentPage + 1, typePageSize = ViewBag.TypePageSize, borrowPage = ViewBag.BorrowCurrentPage, borrowPageSize = ViewBag.BorrowPageSize })">Next</a>
+                    <a href="@Url.Action("Maintain", new { authorPage = ViewBag.AuthorCurrentPage, authorPageSize = ViewBag.AuthorPageSize, typePage = ViewBag.TypeTotalPages, typePageSize = ViewBag.TypePageSize, borrowPage = ViewBag.BorrowCurrentPage, borrowPageSize = ViewBag.BorrowPageSize })">Last</a>
+                }
+            </div>
+        </div>
+
+        <div class="row">
+            <p style="color: white" ;>.</p>
+            <hr />
+            <p style="color: white" ;>.</p>
+        </div>
+
+        <div class="row componentHeadings">
+            <div class="col">
+                <h3>Borrows</h3>
+            </div>
+            <div class="col" style="text-align:right;">
+                @Html.ActionLink("Create New Borrow", "Create", "borrows", null, new { @class = "btn btn-success openModal" })
+            </div>
+        </div>
+
+        <div class="row componentList">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Borrow ID</th>
+                        <th>Student Name</th>
+                        <th>Book Name</th>
+                        <th>Taken Date</th>
+                        <th>Return Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var borrow in Model.Borrows)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => borrow.borrowId)</td>
+                            <td>@Html.DisplayFor(modelItem => borrow.students.name) @Html.DisplayFor(modelItem => borrow.students.surname)</td>
+                            <td>@Html.DisplayFor(modelItem => borrow.books.name)</td>
+                            <td>@Html.DisplayFor(modelItem => borrow.takenDate)</td>
+                            <td>@Html.DisplayFor(modelItem => borrow.broughtDate)</td>
+                            <td>
+                                @Html.ActionLink("Edit", "Edit", "borrows", new { id = borrow.borrowId }, new { @class = "btn btn-warning btn-sm openModal" })
+                                @Html.ActionLink("Delete", "Delete", "borrows", new { id = borrow.borrowId }, new { @class = "btn btn-danger btn-sm openModal" })
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="row componentPaging">
+            <div class="pagination">
+                @if (ViewBag.BorrowCurrentPage > 1)
+                {
+                    <a href="@Url.Action("Maintain", new { authorPage = ViewBag.AuthorCurrentPage, authorPageSize = ViewBag.AuthorPageSize, typePage = ViewBag.TypeCurrentPage, typePageSize = ViewBag.TypePageSize, borrowPage = 1, borrowPageSize = ViewBag.BorrowPageSize })">First</a>
+                    <a href="@Url.Action("Maintain", new { authorPage = ViewBag.AuthorCurrentPage, authorPageSize = ViewBag.AuthorPageSize, typePage = ViewBag.TypeCurrentPage, typePageSize = ViewBag.TypePageSize, borrowPage = ViewBag.BorrowCurrentPage - 1, borrowPageSize = ViewBag.BorrowPageSize })">Previous</a>
+                }
+
+                @* Define the range of pages to display for borrows *@
+                @{
+                    int BorrowMaxVisiblePages = 5; // Number of page links to show at once
+                    int BorrowStartPage = Math.Max(1, ViewBag.BorrowCurrentPage - BorrowMaxVisiblePages / 2);
+                    int BorrowEndPage = Math.Min(ViewBag.BorrowTotalPages, BorrowStartPage + BorrowMaxVisiblePages - 1);
+
+                    // Adjust if we're near the end
+                    if ((BorrowEndPage - BorrowStartPage) < (BorrowMaxVisiblePages - 1))
+                    {
+                        BorrowStartPage = Math.Max(1, BorrowEndPage - BorrowMaxVisiblePages + 1);
+                    }
+                }
+
+                @* Display the page links within the range for borrows *@
+                @for (int i = BorrowStartPage; i <= BorrowEndPage; i++)
+                {
+                    <a href="@Url.Action("Maintain", new { authorPage = ViewBag.AuthorCurrentPage, authorPageSize = ViewBag.AuthorPageSize, typePage = ViewBag.TypeCurrentPage, typePageSize = ViewBag.TypePageSize, borrowPage = i, borrowPageSize = ViewBag.BorrowPageSize })"
+                       class="pagination-link @(i == ViewBag.BorrowCurrentPage ? "active" : "")">@i</a>
+                }
+
+                @if (ViewBag.BorrowCurrentPage < ViewBag.BorrowTotalPages)
+                {
+                    <a href="@Url.Action("Maintain", new { authorPage = ViewBag.AuthorCurrentPage, authorPageSize = ViewBag.AuthorPageSize, typePage = ViewBag.TypeCurrentPage, typePageSize = ViewBag.TypePageSize, borrowPage = ViewBag.BorrowCurrentPage + 1, borrowPageSize = ViewBag.BorrowPageSize })">Next</a>
+                    <a href="@Url.Action("Maintain", new { authorPage = ViewBag.AuthorCurrentPage, authorPageSize = ViewBag.AuthorPageSize, typePage = ViewBag.TypeCurrentPage, typePageSize = ViewBag.TypePageSize, borrowPage = ViewBag.BorrowTotalPages, borrowPageSize = ViewBag.BorrowPageSize })">Last</a>
+                }
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<style>
+    .componentSection {
+        padding: 40px;
+    }
+
+    .componentHeadings {
+    }
+
+    .componentList {
+    }
+
+    .componentPaging {
+    }
+
+    th, td {
+        padding-left: 15px;
+        padding-right: 15px;
+        text-align: left;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    th {
+        background-color: #007bff;
+        color: white;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    tr:hover {
+        background-color: #f1f3f5;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+        margin-top: 15px;
+    }
+
+    .pagination a 
+    {
+        padding: 8px 12px;
+        text-decoration: none;
+        color: #333;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .pagination a.active 
+    {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .pagination a:hover:not(.active) 
+    {
+        background-color: #ddd;
+    }
+</style>
+
+@*Bootstrap Modal*@
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="myModalLabel">Modal Title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body"></div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    $(document).on('click', '.openModal', function (e) {
+        e.preventDefault();
+        var url = $(this).attr('href');
+
+        // Set modal title based on the link text
+        var linkText = $(this).text().trim();
+        $('#myModalLabel').text(linkText + ' - Loading...');
+        $('#myModal .modal-body').load(url, function () {
+            $('#myModalLabel').text(linkText);
+            $('#myModal').modal('show');
+        });
+    });</script>
